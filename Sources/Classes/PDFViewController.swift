@@ -146,10 +146,10 @@ public final class PDFViewController: UIViewController {
         thumbnailCollectionControllerWidth.constant = width
     }
     
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        didSelectIndexPath(IndexPath(row: currentPageIndex, section: 0))
-    }
+    // public override func viewDidLayoutSubviews() {
+    //     super.viewDidLayoutSubviews()
+    //     didSelectIndexPath(IndexPath(row: currentPageIndex, section: 0))
+    // }
     
     override public var prefersStatusBarHidden: Bool {
         return navigationController?.isNavigationBarHidden == true
