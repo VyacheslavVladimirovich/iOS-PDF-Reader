@@ -11,7 +11,7 @@ extension PDFViewController {
     /// Initializes a new `PDFViewController`
     ///
     /// - parameter document:            PDF document to be displayed
-    /// - parameter title:               title that displays on the navigation bar on the PDFViewController; 
+    /// - parameter title:               title that displays on the navigation bar on the PDFViewController;
     ///                                  if nil, uses document's filename
     /// - parameter actionButtonImage:   image of the action button; if nil, uses the default action system item image
     /// - parameter actionStyle:         sytle of the action button
@@ -129,7 +129,7 @@ public final class PDFViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         collectionView.backgroundColor = backgroundColor
         collectionView.register(PDFPageCollectionViewCell.self, forCellWithReuseIdentifier: "page")
         
@@ -146,10 +146,18 @@ public final class PDFViewController: UIViewController {
         thumbnailCollectionControllerWidth.constant = width
     }
     
-    // public override func viewDidLayoutSubviews() {
-    //     super.viewDidLayoutSubviews()
-    //     didSelectIndexPath(IndexPath(row: currentPageIndex, section: 0))
-    // }
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        didSelectIndexPath(IndexPath(row: currentPageIndex, section: 0))
+        
+        let currentIndexPath = IndexPath(row: self.currentPageIndex, section: 0)
+        self.collectionView.reloadItems(at: [currentIndexPath])
+        self.collectionView.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: false)
+        self.thumbnailCollectionController?.currentPageIndex = self.currentPageIndex
+        
+        collectionView.collectionViewLayout.invalidateLayout()
+        collectionView.layoutIfNeeded()
+    }
     
     override public var prefersStatusBarHidden: Bool {
         return navigationController?.isNavigationBarHidden == true
@@ -170,18 +178,6 @@ public final class PDFViewController: UIViewController {
             controller.delegate = self
             controller.currentPageIndex = currentPageIndex
         }
-    }
-    
-    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        coordinator.animate(alongsideTransition: { context in
-            let currentIndexPath = IndexPath(row: self.currentPageIndex, section: 0)
-            self.collectionView.reloadItems(at: [currentIndexPath])
-            self.collectionView.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: false)
-            }) { context in
-                self.thumbnailCollectionController?.currentPageIndex = self.currentPageIndex
-        }
-        
-        super.viewWillTransition(to: size, with: coordinator)
     }
     
     /// Takes an appropriate action based on the current action style
@@ -238,6 +234,7 @@ extension PDFViewController: UICollectionViewDataSource {
         cell.setup(indexPath.row, collectionViewBounds: collectionView.bounds, document: document, pageCollectionViewCellDelegate: self)
         return cell
     }
+    
 }
 
 extension PDFViewController: PDFPageCollectionViewCellDelegate {
